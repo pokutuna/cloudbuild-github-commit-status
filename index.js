@@ -2,10 +2,19 @@ const Octokit = require("@octokit/rest");
 const Ajv = require("ajv");
 const schema = require("./buildResource.schema.json");
 
-// TODO fix for
+const client = new Octokit({
+  auth: process.env.GITHUB_TOKEN,
+  baseUrl: process.env.GITHUB_BASE || "https://api.github.com"
+});
+
+/**
+ * @param {string} "info" | "error"
+ * @param {string} log message
+ * @param {Object|undefined} payload
+ */
 const log = (level, message, object) => {
   object = object ? object : {};
-  if (process.env.VERBOSE) {
+  if (level === "error" || process.env.VERBOSE) {
     console[level](
       JSON.stringify({
         severity: level.toUpperCase(),
@@ -16,14 +25,11 @@ const log = (level, message, object) => {
   }
 };
 
-const client = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
-  baseUrl: process.env.GITHUB_BASE || "https://api.github.com"
-});
-
-// Mappings from CloudBuild statuses to GitHub commit statuses
-// https://cloud.google.com/cloud-build/docs/api/reference/rest/Shared.Types/Status
-// https://developer.github.com/v3/repos/statuses/#create-a-status
+/**
+ * Mappings from CloudBuild statuses to GitHub commit statuses
+ * https://cloud.google.com/cloud-build/docs/api/reference/rest/Shared.Types/Status
+ * https://developer.github.com/v3/repos/statuses/#create-a-status
+ */
 const statusMapping = {
   STATUS_UNKNWNON: "pending",
   QUEUED: "pending",
@@ -35,31 +41,33 @@ const statusMapping = {
   CANCELLED: "error"
 };
 
+/**
+ * @param {string} base64-encoded string
+ */
 const decodePubSubData = data =>
   JSON.parse(Buffer.from(data, "base64").toString());
 
-// https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.builds
+/**
+ * https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.builds
+ * @param {Object} input
+ */
 const validateBuildResource = input => {
   const ajv = new Ajv({ allErrors: true });
   ajv.validate(schema, input);
   return ajv.errors;
 };
 
-// https://cloud.google.com/cloud-build/docs/api/reference/rest/Shared.Types/Build?hl=ja#RepoSource
+/**
+ * @param {string} repoName is formatted as `github_{owner}_{repo}`.
+ *     This string is included RepoSource triggered by CloudBuild github trigger
+ *     https://cloud.google.com/cloud-build/docs/api/reference/rest/Shared.Types/Build#RepoSource
+ */
 const extractOwnerRepo = repoName => {
-  // The repoName is formatted like `github_{owner}_{repo}` when it is triggered by github trigger.
   const match = repoName.match(/^github_([^_]+)_(.+)$/);
   return match ? { owner: match[1], repo: match[2] } : undefined;
 };
 
-const formatContext = steps => {
-  const step = steps[0];
-  return `${step.name}${step.args ? ": " + (step.args || []).join(" ") : ""}`;
-};
-
-// https://octokit.github.io/rest.js/#octokit-routes-repos-create-status
-// https://octokit.github.io/rest.js/#octokit-routes-checks
-module.exports.updateCommitStatus = pubsubEvent => {
+const updateCommitStatus = pubsubEvent => {
   const buildResource = decodePubSubData(pubsubEvent.data);
   log("info", "event.data decoded", buildResource);
 
@@ -88,4 +96,11 @@ module.exports.updateCommitStatus = pubsubEvent => {
 
   log("info", "createStatus", params);
   client.repos.createStatus(params);
+};
+
+module.exports = {
+  decodePubSubData,
+  validateBuildResource,
+  extractOwnerRepo,
+  updateCommitStatus
 };
