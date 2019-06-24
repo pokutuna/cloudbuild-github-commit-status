@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "projectId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["name"]
+      }
+    },
+    "sourceProvenance": {
+      "type": "object",
+      "properties": {
+        "resolvedRepoSource": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "string"
+            },
+            "repoName": {
+              "type": "string",
+              "pattern": "^github_([^_]+)_(.+)"
+            },
+            "commitSha": {
+              "type": "string"
+            }
+          },
+          "required": ["projectId", "repoName", "commitSha"]
+        }
+      },
+      "required": ["resolvedRepoSource"]
+    },
+    "logUrl": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "id",
+    "projectId",
+    "status",
+    "steps",
+    "sourceProvenance",
+    "logUrl",
+    "tags"
+  ]
+}
