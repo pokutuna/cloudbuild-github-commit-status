@@ -1,0 +1,26 @@
+{
+  "name": "cloudbuild-github-commit-status",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pokutuna/cloudbuild-github-commit-status.git"
+  },
+  "keywords": [
+    "google-cloud-platform",
+    "google-cloud-build",
+    "google-cloud-functions",
+    "github",
+    "continuous-integration"
+  ],
+  "author": "pokutuna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pokutuna/cloudbuild-github-commit-status/issues"
+  },
+  "homepage": "https://github.com/pokutuna/cloudbuild-github-commit-status#readme"
+}
