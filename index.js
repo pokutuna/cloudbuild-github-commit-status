@@ -42,7 +42,7 @@ const statusMapping = {
 };
 
 /**
- * @param {string} base64-encoded string
+ * @param {string} base64-encoded JSON string
  */
 const decodePubSubData = data =>
   JSON.parse(Buffer.from(data, "base64").toString());
@@ -66,6 +66,12 @@ const extractOwnerRepo = repoName => {
   const match = repoName.match(/^github_([^_]+)_(.+)$/);
   return match ? { owner: match[1], repo: match[2] } : undefined;
 };
+
+/**
+ * @param {Object} buildResource
+ */
+const formatContext = buildResource =>
+  process.env.BUILD_CONTEXT || `CloudBuild:${buildResource.buildTriggerId}`;
 
 const updateCommitStatus = pubsubEvent => {
   const buildResource = decodePubSubData(pubsubEvent.data);
@@ -91,7 +97,7 @@ const updateCommitStatus = pubsubEvent => {
     state: statusMapping[buildResource.status],
     sha: repo.commitSha,
     target_url: buildResource.logUrl,
-    context: `CloudBuild:${buildResource.buildTriggerId}`
+    context: formatContext(buildResource)
   };
 
   log("info", "createStatus", params);
