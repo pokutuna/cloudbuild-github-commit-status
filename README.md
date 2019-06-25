@@ -12,14 +12,16 @@ __You should use the official GitHubApp if you can.__
 ### Add trigger
 
 - Add trigger from https://console.cloud.google.com/cloud-build/triggers
-- select "Cloud Build configuration file (yaml or json)" and set `cloudbuild.yaml` location.
+- Select "Cloud Build configuration file (yaml or json)" and set `cloudbuild.yaml` location.
 
 ### Get GitHub Personal Access Tokens
 
 - Generate new token from https://github.com/settings/tokens
-- check `repo:status` scope
+- Check `repo:status` scope
 
 ### Deploy
+
+Use `gcloud` CLI to deploy to [Cloud Functions](https://console.cloud.google.com/functions)
 
     $ gcloud functions deploy updateCommitStatus --runtime nodejs10 --trigger-topic cloud-builds --set-env-vars GITHUB_TOKEN=******,VERBOSE=true
 
