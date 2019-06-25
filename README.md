@@ -1,11 +1,13 @@
 cloudbuild-github-commit-status
 ===
 
-* You should use the official GitHubApp if you can.*
+__You should use the official GitHubApp if you can.__
 
 [Google Cloud Build · GitHub Marketplace](https://github.com/marketplace/google-cloud-build)
 
 ... If you have some problems like [`cloudbuild.yaml` positions](https://github.com/GoogleCloudPlatform/cloud-builders/issues/503) in your repository, try this function.
+
+## Usage
 
 ### Add trigger
 
@@ -21,8 +23,8 @@ cloudbuild-github-commit-status
 
     $ gcloud functions deploy updateCommitStatus --runtime nodejs10 --trigger-topic cloud-builds --set-env-vars GITHUB_TOKEN=******,VERBOSE=true
 
-### Variables
+## Variables
 
 - `GITHUB_TOKEN` (required)
-- `VERBOSE`
-- `BUILD_CONTEXT`
+- `VERBOSE` logs more information to https://console.cloud.google.com/logs/viewer 
+- `BUILD_CONTEXT` is name for build step (defualt: `CloudBuild:${buildTriggerId}`)
