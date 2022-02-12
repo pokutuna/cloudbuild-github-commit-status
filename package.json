@@ -25,7 +25,7 @@
   "homepage": "https://github.com/pokutuna/cloudbuild-github-commit-status#readme",
   "dependencies": {
     "@octokit/rest": "^16.28.2",
-    "ajv": "^6.10.0"
+    "ajv": "^6.12.3"
   },
   "engines": {
     "node": ">=8"
